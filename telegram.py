@@ -570,21 +570,29 @@ async def send_welcome(msg: types.Message):
         existing_vkuser = VkUser.objects.filter(owner=user).count()
         if not existing_vkuser:
             link = 'https://oauth.vk.com/authorize?client_id={}&' \
-                   'display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,messages,offline,docs,photos,video,stories,audio' \
+                   'display=page&redirect_uri=https://oauth.vk.com/' \
+                   'blank.html&scope=friends,messages,offline,docs,photos,' \
+                   'video,stories,audio' \
                    '&response_type=token&v={}'.format(VK_APP_ID, API_VERSION)
             mark = InlineKeyboardMarkup()
             login = InlineKeyboardButton('ВХОД', url=link)
             mark.add(login)
-            await msg.reply('Привет, этот бот поможет тебе общаться ВКонтакте, войди по кнопке ниже'
-                            ' и отправь мне то, что получишь в адресной строке.',
-                            reply_markup=mark)
+            await msg.reply(
+                'Привет, этот бот поможет тебе общаться ВКонтакте, '
+                'войди по кнопке ниже и отправь мне то, '
+                'что получишь в адресной строке.',
+                reply_markup=mark
+            )
         else:
             await msg.reply('Вход уже выполнен!\n/stop для выхода.')
     else:
         markup = InlineKeyboardMarkup()
         me = await bot.me
         markup.add(InlineKeyboardButton('Перейти в бота', url=f'https://t.me/{me.username}?start=login'))
-        await msg.reply('Залогиниться можно только через личный чат с ботом', reply_markup=markup)
+        await msg.reply(
+            'Авторизоваться можно только через личный чат с ботом',
+            reply_markup=markup
+        )
 
 
 @dp.message_handler(commands=['stop'])
@@ -956,17 +964,28 @@ async def handle_new_group(msg: types.Message):
 
 @dp.message_handler(content_types=types.ContentType.ANY, func=lambda message: message.migrate_to_chat_id)
 async def handle_chat_migration(msg: types.Message):
-    # Юзеру сначала нужно выбрать чат для привязки, а уже ПОТОМ делать миграцию. Иначе старый chatid останется на иналйнкнопках
+    # Юзеру сначала нужно выбрать чат для привязки,
+    # а уже ПОТОМ делать миграцию.
+    # Иначе старый chatid останется на иналйнкнопках
+
     forwards = Forward.objects.filter(tgchat__cid=msg.chat.id)
     for forward in forwards:
         forward.tgchat.cid = msg.migrate_to_chat_id
         forward.tgchat.save()
 
         markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton('Установить аватар и название', callback_data=f'setinfo{forward.vkchat.cid}'))
-        await bot.send_message(msg.migrate_to_chat_id,
-                               text='Отлично! Теперь можно установить аватар и название. Если кнопка выше не работает, то воспользуйтесь этой.',
-                               reply_markup=markup)
+        markup.add(
+            InlineKeyboardButton(
+                'Установить аватар и название',
+                callback_data=f'setinfo{forward.vkchat.cid}'
+            )
+        )
+        await bot.send_message(
+            msg.migrate_to_chat_id,
+            text='Отлично! Теперь можно установить аватар и название. '
+                 'Если кнопка выше не работает, то воспользуйтесь этой.',
+            reply_markup=markup
+        )
 
 
 if __name__ == '__main__':

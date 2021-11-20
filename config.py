@@ -11,8 +11,7 @@ DATABASE_NAME = os.environ.get('POSTGRES_DB', 'tgvkbot')
 VK_APP_ID = os.environ.get('VK_APP_ID', '2685278')  # Kate mobile
 
 AUDIO_URL = os.environ.get('AUDIO_URL', '')
-AUDIO_ACCESS_URL = os.environ.get('AUDIO_ACCESS_URL',
-                                  '')
+AUDIO_ACCESS_URL = os.environ.get('AUDIO_ACCESS_URL', '')
 TOKEN_REFRESH_URL = os.environ.get('TOKEN_REFRESH_URL', '')
 AUDIO_SEARCH_URL = os.environ.get('AUDIO_SEARCH_URL', '')
 AUDIO_PROXY_URL = os.environ.get('AUDIO_PROXY_URL', '')
